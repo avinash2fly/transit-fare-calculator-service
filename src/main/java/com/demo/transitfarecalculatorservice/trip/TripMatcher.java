@@ -36,6 +36,11 @@ public class TripMatcher {
                 trips.add(finishedTrip(tapOn, tap));
             }
         }
+
+        // Any tap on still waiting at the end never had a tap off.
+        for (Tap tapOn : tapOnWaitingByPan.values()) {
+            trips.add(incompleteTrip(tapOn));
+        }
         return trips;
     }
 
@@ -54,6 +59,19 @@ public class TripMatcher {
 
     private Trip cancelledTrip(Tap tapOn, Tap tapOff) {
         return buildTrip(tapOn, tapOff, NO_CHARGE, TripStatus.CANCELLED);
+    }
+
+    private Trip incompleteTrip(Tap tapOn) {
+        return new Trip(
+                tapOn.dateTimeUtc(),
+                null,
+                tapOn.stopId(),
+                null,
+                fareCalculator.maxFareFrom(tapOn.stopId()),
+                tapOn.companyId(),
+                tapOn.busId(),
+                tapOn.pan(),
+                TripStatus.INCOMPLETE);
     }
 
     private Trip buildTrip(Tap tapOn, Tap tapOff, BigDecimal charge, TripStatus status) {
