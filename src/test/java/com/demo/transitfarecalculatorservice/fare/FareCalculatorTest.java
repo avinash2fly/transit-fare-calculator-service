@@ -23,4 +23,11 @@ class FareCalculatorTest {
         assertEquals(new BigDecimal("5.50"), calculator.fareBetween("Stop2", "Stop3"));
         assertEquals(new BigDecimal("7.30"), calculator.fareBetween("Stop1", "Stop3"));
     }
+
+    @Test
+    void maxFareFromAStopIsTheMostExpensiveRouteFromThatStop() {
+        assertEquals(new BigDecimal("7.30"), calculator.maxFareFrom("Stop1"));
+        assertEquals(new BigDecimal("5.50"), calculator.maxFareFrom("Stop2"));
+        assertEquals(new BigDecimal("7.30"), calculator.maxFareFrom("Stop3"));
+    }
 }

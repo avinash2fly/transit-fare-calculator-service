@@ -1,6 +1,7 @@
 package com.demo.transitfarecalculatorservice.trip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,7 +37,7 @@ class TripMatcherTest {
                 new BigDecimal("3.25"), "Company1", "Bus37", PAN, TripStatus.COMPLETED);
 
         assertEquals(List.of(expectedTrip), trips);
-        assertEquals(300, expectedTrip.durationSecs());
+        assertEquals(300L, expectedTrip.durationSecs());
     }
 
     @Test
@@ -51,6 +52,20 @@ class TripMatcherTest {
                 new BigDecimal("0.00"), "Company1", "Bus37", PAN, TripStatus.CANCELLED);
 
         assertEquals(List.of(expectedTrip), trips);
+    }
+
+    @Test
+    void tapOnWithoutTapOffIsAnIncompleteTripChargedTheMaxFareFromThatStop() {
+        Tap tapOn = tap(1, "22-01-2023 09:20:00", TapType.ON, "Stop3");
+
+        List<Trip> trips = matcher.match(List.of(tapOn));
+
+        Trip expectedTrip = new Trip(
+                tapOn.dateTimeUtc(), null, "Stop3", null,
+                new BigDecimal("7.30"), "Company1", "Bus37", PAN, TripStatus.INCOMPLETE);
+
+        assertEquals(List.of(expectedTrip), trips);
+        assertNull(expectedTrip.durationSecs());
     }
 
     private static Tap tap(long id, String dateTime,TapType type, String stop) {

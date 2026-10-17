@@ -15,7 +15,11 @@ public record Trip(
         String pan,
         TripStatus status) {
 
-    public long durationSecs() {
+    /** Null for an incomplete trip, which has no finish time. */
+    public Long durationSecs() {
+        if (finished == null) {
+            return null;
+        }
         return Duration.between(started, finished).getSeconds();
     }
 }

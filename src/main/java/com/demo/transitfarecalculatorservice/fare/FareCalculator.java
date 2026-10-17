@@ -13,6 +13,17 @@ public class FareCalculator {
             new Route("Stop2", "Stop3", new BigDecimal("5.50")),
             new Route("Stop1", "Stop3", new BigDecimal("7.30")));
 
+    /** The highest fare from this stop to any other stop. Charged when a rider never taps off. */
+    public BigDecimal maxFareFrom(String stop) {
+        BigDecimal maxFare = BigDecimal.ZERO;
+        for (Route route : ROUTES) {
+            if (route.stopA().equals(stop) || route.stopB().equals(stop)) {
+                maxFare = maxFare.max(route.fare());
+            }
+        }
+        return maxFare;
+    }
+
     public BigDecimal fareBetween(String fromStop, String toStop) {
         for (Route route : ROUTES) {
             if (route.connects(fromStop, toStop)) {
