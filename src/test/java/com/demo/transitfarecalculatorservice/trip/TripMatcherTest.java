@@ -39,6 +39,20 @@ class TripMatcherTest {
         assertEquals(300, expectedTrip.durationSecs());
     }
 
+    @Test
+    void tapOnThenTapOffAtTheSameStopIsACancelledTripAndIsNotCharged() {
+        Tap tapOn = tap(1, "23-01-2023 08:00:00", TapType.ON, "Stop1");
+        Tap tapOff = tap(2, "23-01-2023 08:02:00", TapType.OFF, "Stop1");
+
+        List<Trip> trips = matcher.match(List.of(tapOn, tapOff));
+
+        Trip expectedTrip = new Trip(
+                tapOn.dateTimeUtc(), tapOff.dateTimeUtc(), "Stop1", "Stop1",
+                new BigDecimal("0.00"), "Company1", "Bus37", PAN, TripStatus.CANCELLED);
+
+        assertEquals(List.of(expectedTrip), trips);
+    }
+
     private static Tap tap(long id, String dateTime,TapType type, String stop) {
         return new Tap(id, DateTimeHelper.parse(dateTime), type, stop, "Company1", "Bus37", PAN);
     }
