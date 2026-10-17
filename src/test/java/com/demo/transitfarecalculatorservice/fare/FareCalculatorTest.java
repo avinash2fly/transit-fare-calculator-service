@@ -13,7 +13,7 @@ class FareCalculatorTest {
 
     @BeforeEach
     void setUp() {
-        calculator = new FareCalculator();
+        calculator = new FareConfig().fareCalculator();
     }
 
     @Test

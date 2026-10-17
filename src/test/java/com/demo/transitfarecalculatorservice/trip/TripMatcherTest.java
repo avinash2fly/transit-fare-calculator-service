@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.demo.transitfarecalculatorservice.fare.FareCalculator;
+import com.demo.transitfarecalculatorservice.fare.FareConfig;
 import com.demo.transitfarecalculatorservice.helper.DateTimeHelper;
 import com.demo.transitfarecalculatorservice.tap.Tap;
 import com.demo.transitfarecalculatorservice.tap.TapType;
@@ -22,7 +22,7 @@ class TripMatcherTest {
 
     @BeforeEach
     void setUp() {
-        matcher = new TripMatcher(new FareCalculator());
+        matcher = new TripMatcher(new FareConfig().fareCalculator());
     }
 
     @Test

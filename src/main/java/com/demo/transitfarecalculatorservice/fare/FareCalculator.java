@@ -1,46 +1,50 @@
 package com.demo.transitfarecalculatorservice.fare;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class FareCalculator {
 
-    private static final List<Route> ROUTES = List.of(
-            new Route("Stop1", "Stop2", new BigDecimal("3.25")),
-            new Route("Stop2", "Stop3", new BigDecimal("5.50")),
-            new Route("Stop1", "Stop3", new BigDecimal("7.30")));
+    /** Fare for each route, keyed by its two stops. A set has no order, so one entry covers both directions. */
+    private final Map<Set<String>, BigDecimal> fareByRoute = new HashMap<>();
 
-    /** The highest fare from this stop to any other stop. Charged when a rider never taps off. */
+    /** Highest fare from each stop to any other stop. */
+    private final Map<String, BigDecimal> maxFareByStop = new HashMap<>();
+
+    public FareCalculator(List<Route> routes) {
+        for (Route route : routes) {
+            addRoute(route.stopA(), route.stopB(), route.fare());
+        }
+    }
+
+    public BigDecimal fareBetween(String fromStop, String toStop) {
+        BigDecimal fare = fareByRoute.get(Set.of(fromStop, toStop));
+        if (fare == null) {
+            throw new IllegalArgumentException("No fare defined between " + fromStop + " and " + toStop);
+        }
+        return fare;
+    }
+
+    /** Charged when a rider taps on but never taps off. */
     public BigDecimal maxFareFrom(String stop) {
-        BigDecimal maxFare = BigDecimal.ZERO;
-        for (Route route : ROUTES) {
-            if (route.stopA().equals(stop) || route.stopB().equals(stop)) {
-                maxFare = maxFare.max(route.fare());
-            }
+        BigDecimal maxFare = maxFareByStop.get(stop);
+        if (maxFare == null) {
+            throw new IllegalArgumentException("Unknown stop " + stop);
         }
         return maxFare;
     }
 
-    public BigDecimal fareBetween(String fromStop, String toStop) {
-        for (Route route : ROUTES) {
-            if (route.connects(fromStop, toStop)) {
-                return route.fare();
-            }
-        }
-        throw new IllegalArgumentException("No fare defined between " + fromStop + " and " + toStop);
+    private void addRoute(String stopA, String stopB, BigDecimal fare) {
+        fareByRoute.put(Set.of(stopA, stopB), fare);
+        keepHigherFare(stopA, fare);
+        keepHigherFare(stopB, fare);
     }
 
-    /** A priced route between two stops.
-     * The price is the same in either direction. */
-    private record Route(String stopA, String stopB, BigDecimal fare) {
-
-        boolean connects(String from, String to) {
-            boolean forwards = stopA.equals(from) && stopB.equals(to);
-            boolean backwards = stopA.equals(to) && stopB.equals(from);
-            return forwards || backwards;
-        }
+    private void keepHigherFare(String stop, BigDecimal fare) {
+        BigDecimal currentMax = maxFareByStop.getOrDefault(stop, BigDecimal.ZERO);
+        maxFareByStop.put(stop, currentMax.max(fare));
     }
 }
