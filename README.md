@@ -19,7 +19,7 @@
 Reads `taps.csv` and writes `trips.csv` in the current folder.
 
 ```shell
-java -jar target/transit-fare-calculator-service-0.0.1-SNAPSHOT.jar`
+java -jar target/transit-fare-calculator-service-0.0.1-SNAPSHOT.jar
 ```
 
 ### Run with custom input and output names
@@ -63,18 +63,26 @@ Started, Finished, DurationSecs, FromStopId, ToStopId, ChargeAmount, CompanyId, 
 - Taps 3 and 4: card taps on again without tapping off, so the first trip is INCOMPLETE.
 - Tap 6: tap off with no tap on, so no trip.
 
+## Design
+
+- Flow: `TapCsvReader` → `TripMatcher` (uses `FareCalculator`) → `TripCsvWriter`. `TripProcessingRunner` runs these steps at startup.
+- `TripMatcher` sorts the taps by time, then makes one pass. A `Map<PAN, Tap>` holds the waiting tap on for each card.
+- `FareCalculator` gets its routes from `FareConfig`. It works out the fare in both directions and the max fare for each stop.
+- Packages are by domain: `tap`, `fare`, `trip`, `runner`, `helper`.
+- Spring Boot gives the runnable jar, dependency injection and test support. This is a one-shot job, so no web server starts.
+
 ## Assumptions
 
 ### Matching
 
 | Assumption | Why |
 |---|---|
-| A trip is matched by card (PAN), company and bus together. | Bus ids are only unique within a company. |
+| Each card has at most one waiting tap on. A tap off pairs with it only if the company and bus match. | Bus ids are only unique within a company. |
 | A second tap on closes the waiting trip as INCOMPLETE, even on the same bus. | The rider never tapped off, so a double tap is charged like a missed tap off. |
-| A tap off on a different company or bus closes the waiting trip as INCOMPLETE. The tap off is ignored. | The rider left the first bus without tapping off, and a trip across two buses can't be priced. |
+| A tap off on a different company or bus closes the waiting trip as INCOMPLETE. The tap off is ignored. | The rider left the first bus without tapping off. A trip across two buses doesn't fit one output row, which has one CompanyId and BusID. |
 | A tap off with no waiting tap on is ignored and logged. | There is no start stop or time, so the trip can't be priced. Guessing could overcharge the rider. The spec only defines trips that start with a tap on. |
 | A tap on still waiting at the end of the file is INCOMPLETE. | No tap off was seen. |
-| Input can be in any order. | the example is not sorted. |
+| Input can be in any order. Taps are sorted by time, then ID. | The example is not sorted. ID decides the order of taps at the same second. |
 
 ### Pricing
 
@@ -94,13 +102,14 @@ Started, Finished, DurationSecs, FromStopId, ToStopId, ChargeAmount, CompanyId, 
 | Incomplete trips leave Finished, DurationSecs and ToStopId blank. | There is no tap off. |
 | Skipped taps are logged as `WARN`, with the tap id and not the card number. | The skipped tap can be checked later, and card numbers are sensitive. |
 | The whole file fits in memory. | Keeps the MVP simple. Large files would need streaming. |
+| One bad row (unknown stop, bad date) stops the whole job. No output file is written. | The input is assumed to be well formed. |
 
 ### Rules the spec does not cover
 
 | Assumption | Why |
 |---|---|
 | A tap off ends the trip. A later tap on, even on the same bus, starts a new trip. | A tap off means the rider has finished the journey. |
-| Trips are never joined. Stop1 to Stop2, then Stop2 to Stop3, costs $3.25 + $5.50, not $7.30. | The spec has no transfer requiements, and each output row has only one bus. |
+| Trips are never joined. Stop1 to Stop2, then Stop2 to Stop3, costs $3.25 + $5.50, not $7.30. | The spec has no transfer rules, and each output row has only one bus. |
 | A tap on or tap off on another bus ends the waiting trip. | Both mean the rider got off the first bus. |
 | A trip is on one company and one bus. | Each output row has one CompanyId and one BusID. |
 | Tap type, company and bus are used as given. We never guess ON or OFF from the order. | The input states them clearly and is assumed to be correct. |
@@ -108,3 +117,12 @@ Started, Finished, DurationSecs, FromStopId, ToStopId, ChargeAmount, CompanyId, 
 | A tap on and off at the same stop is CANCELLED, with no time limit. | That is the spec. A real system might only allow this within a few minutes, but the spec has no such rule. |
 | A tap on and its tap off are paired however far apart they are, even on different days. | The spec gives no time limit, and picking one would be a guess. |
 | An unknown stop is an error, not a $0.00 fare. | Charging nothing would hide bad data. |
+
+## Future improvements
+
+- Allow a CANCELLED trip only within a few minutes.
+- Add a maximum trip length.
+- Add transfers and fare capping.
+- Stream large files instead of loading them all.
+- Read fares from a config file.
+- Skip bad rows and report them, instead of stopping the job.

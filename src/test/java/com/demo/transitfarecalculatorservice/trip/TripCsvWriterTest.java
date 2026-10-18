@@ -44,4 +44,14 @@ class TripCsvWriterTest {
                 22-01-2023 09:20:00, , , Stop3, , $7.30, Company1, Bus36, 4111111111111111, INCOMPLETE
                 """, out.toString());
     }
+
+    @Test
+    void writesOnlyTheHeaderWhenThereAreNoTrips() {
+        StringWriter out = new StringWriter();
+        writer.write(List.of(), out);
+
+        assertEquals("""
+                Started, Finished, DurationSecs, FromStopId, ToStopId, ChargeAmount, CompanyId, BusID, PAN, Status
+                """, out.toString());
+    }
 }

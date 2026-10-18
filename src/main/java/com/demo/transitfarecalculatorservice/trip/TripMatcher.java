@@ -29,8 +29,9 @@ public class TripMatcher {
         List<Trip> trips = new ArrayList<>();
 
         // Input is not in time order, and pairing a tap off with its tap on depends on it.
+        // Taps at the same time are ordered by id, so a tap on and tap off at the same second pair correctly.
         List<Tap> tapsInTimeOrder = taps.stream()
-                .sorted(Comparator.comparing(Tap::dateTimeUtc))
+                .sorted(Comparator.comparing(Tap::dateTimeUtc).thenComparingLong(Tap::id))
                 .toList();
 
         for (Tap tap : tapsInTimeOrder) {
