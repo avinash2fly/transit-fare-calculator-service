@@ -35,12 +35,23 @@ public class TripMatcher {
                 .toList();
 
         for (Tap tap : tapsInTimeOrder) {
+            Tap tapOn = tapOnWaitingByPan.remove(tap.pan());
+
             if (tap.type() == TapType.ON) {
+                // A new tap on means the rider left the earlier bus without tapping off.
+                if (tapOn != null) {
+                    trips.add(incompleteTrip(tapOn));
+                }
                 tapOnWaitingByPan.put(tap.pan(), tap);
-            } else {
-                Tap tapOn = tapOnWaitingByPan.remove(tap.pan());
-                trips.add(finishedTrip(tapOn, tap));
+            } else if (tapOn != null) {
+                if (sameBus(tapOn, tap)) {
+                    trips.add(finishedTrip(tapOn, tap));
+                } else {
+                    // A tap off on another bus shows the rider left the first bus without tapping off.
+                    trips.add(incompleteTrip(tapOn));
+                }
             }
+            // A tap off with no tap on waiting is ignored.
         }
 
         // Any tap on still waiting at the end never had a tap off.
@@ -48,6 +59,11 @@ public class TripMatcher {
             trips.add(incompleteTrip(tapOn));
         }
         return trips;
+    }
+
+    /** Bus ids are only unique within a company, so both are compared. */
+    private boolean sameBus(Tap tapOn, Tap tapOff) {
+        return tapOn.companyId().equals(tapOff.companyId()) && tapOn.busId().equals(tapOff.busId());
     }
 
     private Trip finishedTrip(Tap tapOn, Tap tapOff) {
