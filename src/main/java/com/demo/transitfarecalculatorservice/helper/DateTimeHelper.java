@@ -14,7 +14,6 @@ public final class DateTimeHelper {
         return LocalDateTime.parse(text.trim(), FORMAT);
     }
 
-    /** Null in, null out: an incomplete trip has no finish time. */
     public static String format(LocalDateTime dateTime) {
         if (dateTime == null) {
             return null;

@@ -12,7 +12,6 @@ import java.util.List;
 @Component
 public class TripCsvWriter {
 
-    // Values are separated by ", " as in the example output. A null value is written as blank.
     private static final CSVFormat FORMAT = CSVFormat.DEFAULT.builder()
             .setDelimiter(", ")
             .setRecordSeparator("\n")

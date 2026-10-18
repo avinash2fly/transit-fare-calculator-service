@@ -91,7 +91,7 @@ class TripMatcherTest {
     void tripsAreSortedByStartTimeThenPan() {
         String panA = "3530111333300000";
         String panB = "4111111111111111";
-        // Both start at 13:00 and the 4111 card finishes later, so only the PAN puts it first.
+
         Tap sameStartFirstPanOn = tap(1, "22-01-2023 13:00:00", TapType.ON, "Stop1", PAN);
         Tap sameStartFirstPanOff = tap(2, "22-01-2023 13:05:00", TapType.OFF, "Stop2", PAN);
         Tap sameStartSecondPanOn = tap(3, "22-01-2023 13:00:00", TapType.ON, "Stop1", panB);
@@ -100,6 +100,7 @@ class TripMatcherTest {
         Tap nextDayOff = tap(6, "23-01-2023 08:05:00", TapType.OFF, "Stop3", PAN);
         Tap earlyIncompleteOn = tap(7, "22-01-2023 09:00:00", TapType.ON, "Stop3", panA);
 
+        // random list of input to test sort
         List<Trip> trips = matcher.match(List.of(
                 nextDayOff, sameStartFirstPanOn, earlyIncompleteOn, sameStartSecondPanOff,
                 nextDayOn, sameStartSecondPanOn, sameStartFirstPanOff));

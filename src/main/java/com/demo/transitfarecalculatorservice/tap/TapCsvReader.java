@@ -14,7 +14,6 @@ import java.util.List;
 @Component
 public class TapCsvReader {
 
-    // The first row holds the column names; values are written as "a, b, c" so spaces are trimmed.
     private static final CSVFormat FORMAT = CSVFormat.DEFAULT.builder()
             .setHeader()
             .setSkipHeaderRecord(true)

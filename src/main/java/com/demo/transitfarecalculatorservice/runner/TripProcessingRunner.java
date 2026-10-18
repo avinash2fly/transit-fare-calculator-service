@@ -18,11 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-/**
- * Runs once at startup: reads the taps file, builds the trips and writes the trips file.
- * Files come from --input and --output; if not given they are taps.csv and trips.csv.
- * If this fails, the application exits with a non-zero code.
- */
 @Component
 public class TripProcessingRunner implements ApplicationRunner {
 

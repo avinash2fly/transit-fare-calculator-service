@@ -15,12 +15,10 @@ public record Trip(
         String pan,
         TripStatus status) {
 
-    /** The charge with a dollar sign, e.g. "$3.25". */
     public String formattedChargeAmount() {
         return "$" + chargeAmount.toPlainString();
     }
 
-    /** Null for an incomplete trip, which has no finish time. */
     public Long durationSecs() {
         if (finished == null) {
             return null;
