@@ -58,6 +58,8 @@ public class TripMatcher {
         for (Tap tapOn : tapOnWaitingByPan.values()) {
             trips.add(incompleteTrip(tapOn));
         }
+
+        trips.sort(Comparator.comparing(Trip::started).thenComparing(Trip::pan));
         return trips;
     }
 

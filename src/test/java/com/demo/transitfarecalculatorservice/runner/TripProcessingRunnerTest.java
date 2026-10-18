@@ -50,6 +50,17 @@ class TripProcessingRunnerTest {
     }
 
     @Test
+    void producesTheExpectedTripsForTheSampleTaps() throws Exception {
+        Path sampleTaps = Path.of(getClass().getResource("/sampleTaps.csv").toURI());
+        Path sampleTrips = Path.of(getClass().getResource("/sampleTrips.csv").toURI());
+        Path output = folder.resolve("trips.csv");
+
+        runner.run(new DefaultApplicationArguments("--input=" + sampleTaps, "--output=" + output));
+
+        assertEquals(Files.readString(sampleTrips), Files.readString(output));
+    }
+
+    @Test
     void failsWithAClearMessageWhenTheInputFileIsMissing() {
         Path input = folder.resolve("missing.csv");
 
