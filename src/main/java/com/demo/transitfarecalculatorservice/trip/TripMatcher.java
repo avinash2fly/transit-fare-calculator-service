@@ -48,7 +48,7 @@ public class TripMatcher {
                 }
                 tapOnWaitingByPan.put(tap.pan(), tap);
             } else if (tapOn == null) {
-                log.warn("Ignoring tap off {}: no tap on is waiting for this card", tap.id());
+                log.warn("Ignoring tap off with id {}: no tap on is waiting for this card", tap.id());
             } else if (sameBus(tapOn, tap)) {
                 trips.add(finishedTrip(tapOn, tap));
             } else {
