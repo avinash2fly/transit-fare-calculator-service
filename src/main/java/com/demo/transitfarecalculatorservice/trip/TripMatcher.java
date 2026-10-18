@@ -1,19 +1,14 @@
 package com.demo.transitfarecalculatorservice.trip;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.demo.transitfarecalculatorservice.fare.FareCalculator;
+import com.demo.transitfarecalculatorservice.tap.Tap;
+import com.demo.transitfarecalculatorservice.tap.TapType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.demo.transitfarecalculatorservice.fare.FareCalculator;
-import com.demo.transitfarecalculatorservice.tap.Tap;
-import com.demo.transitfarecalculatorservice.tap.TapType;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Component
 public class TripMatcher {
@@ -48,7 +43,7 @@ public class TripMatcher {
                 }
                 tapOnWaitingByPan.put(tap.pan(), tap);
             } else if (tapOn == null) {
-                log.warn("Ignoring tap off {}: no tap on is waiting for this card", tap.id());
+                log.warn("Ignoring tap off with id {}: no tap on is waiting for this card", tap.id());
             } else if (sameBus(tapOn, tap)) {
                 trips.add(finishedTrip(tapOn, tap));
             } else {
@@ -63,6 +58,8 @@ public class TripMatcher {
         for (Tap tapOn : tapOnWaitingByPan.values()) {
             trips.add(incompleteTrip(tapOn));
         }
+
+        trips.sort(Comparator.comparing(Trip::started).thenComparing(Trip::pan));
         return trips;
     }
 

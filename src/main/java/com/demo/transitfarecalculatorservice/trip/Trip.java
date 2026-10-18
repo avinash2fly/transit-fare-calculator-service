@@ -15,7 +15,10 @@ public record Trip(
         String pan,
         TripStatus status) {
 
-    /** Null for an incomplete trip, which has no finish time. */
+    public String formattedChargeAmount() {
+        return "$" + chargeAmount.toPlainString();
+    }
+
     public Long durationSecs() {
         if (finished == null) {
             return null;
