@@ -88,11 +88,11 @@ class TripMatcherTest {
         assertEquals(List.of(otherTrip, trip), trips);
     }
 
-    private static Tap tap(long id, String dateTime, TapType type, String stop) {
+    private Tap tap(long id, String dateTime, TapType type, String stop) {
         return tap(id, dateTime, type, stop, PAN);
     }
 
-    private static Tap tap(long id, String dateTime, TapType type, String stop, String pan) {
+    private Tap tap(long id, String dateTime, TapType type, String stop, String pan) {
         return new Tap(id, DateTimeHelper.parse(dateTime), type, stop, "Company1", "Bus37", pan);
     }
 }
