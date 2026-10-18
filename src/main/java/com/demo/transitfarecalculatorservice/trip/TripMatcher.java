@@ -2,6 +2,7 @@ package com.demo.transitfarecalculatorservice.trip;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,12 @@ public class TripMatcher {
         Map<String, Tap> tapOnWaitingByPan = new HashMap<>();
         List<Trip> trips = new ArrayList<>();
 
-        for (Tap tap : taps) {
+        // Input is not in time order, and pairing a tap off with its tap on depends on it.
+        List<Tap> tapsInTimeOrder = taps.stream()
+                .sorted(Comparator.comparing(Tap::dateTimeUtc))
+                .toList();
+
+        for (Tap tap : tapsInTimeOrder) {
             if (tap.type() == TapType.ON) {
                 tapOnWaitingByPan.put(tap.pan(), tap);
             } else {

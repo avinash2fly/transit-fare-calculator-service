@@ -68,7 +68,31 @@ class TripMatcherTest {
         assertNull(expectedTrip.durationSecs());
     }
 
-    private static Tap tap(long id, String dateTime,TapType type, String stop) {
-        return new Tap(id, DateTimeHelper.parse(dateTime), type, stop, "Company1", "Bus37", PAN);
+    @Test
+    void tapsArePairedInTimeOrderNotInputOrder() {
+        String otherPan = "4111111111111111";
+        Tap tapOff = tap(1, "22-01-2023 13:05:00", TapType.OFF, "Stop2", PAN);
+        Tap tapOn = tap(2, "22-01-2023 13:00:00", TapType.ON, "Stop1", PAN);
+        Tap otherTapOff = tap(3, "22-01-2023 09:30:00", TapType.OFF, "Stop2", otherPan);
+        Tap otherTapOn = tap(4, "22-01-2023 09:20:00", TapType.ON, "Stop3", otherPan);
+
+        List<Trip> trips = matcher.match(List.of(tapOff, tapOn, otherTapOff, otherTapOn));
+
+        Trip otherTrip = new Trip(
+                otherTapOn.dateTimeUtc(), otherTapOff.dateTimeUtc(), "Stop3", "Stop2",
+                new BigDecimal("5.50"), "Company1", "Bus37", otherPan, TripStatus.COMPLETED);
+        Trip trip = new Trip(
+                tapOn.dateTimeUtc(), tapOff.dateTimeUtc(), "Stop1", "Stop2",
+                new BigDecimal("3.25"), "Company1", "Bus37", PAN, TripStatus.COMPLETED);
+
+        assertEquals(List.of(otherTrip, trip), trips);
+    }
+
+    private Tap tap(long id, String dateTime, TapType type, String stop) {
+        return tap(id, dateTime, type, stop, PAN);
+    }
+
+    private Tap tap(long id, String dateTime, TapType type, String stop, String pan) {
+        return new Tap(id, DateTimeHelper.parse(dateTime), type, stop, "Company1", "Bus37", pan);
     }
 }
