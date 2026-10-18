@@ -90,13 +90,10 @@ Started, Finished, DurationSecs, FromStopId, ToStopId, ChargeAmount, CompanyId, 
 
 | Assumption | Why |
 |---|---|
-| DateTime, format `dd-MM-yyyy HH:mm:ss`. | Matches the example file. |
-| Columns are read by header name, and spaces around values are trimmed. | The example uses `", "` as the separator. |
 | Output is sorted by start time, then PAN. | Same output on every run, and easy to read. |
 | Incomplete trips leave Finished, DurationSecs and ToStopId blank. | There is no tap off. |
 | Skipped taps are logged as `WARN`, with the tap id and not the card number. | The skipped tap can be checked later, and card numbers are sensitive. |
 | The whole file fits in memory. | Keeps the MVP simple. Large files would need streaming. |
-| Only test card numbers are used. | As per spec. |
 
 ### Rules the spec does not cover
 
