@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.demo.transitfarecalculatorservice.fare.FareCalculator;
@@ -15,6 +17,8 @@ import com.demo.transitfarecalculatorservice.tap.TapType;
 
 @Component
 public class TripMatcher {
+
+    private static final Logger log = LoggerFactory.getLogger(TripMatcher.class);
 
     private static final BigDecimal NO_CHARGE = new BigDecimal("0.00");
 
@@ -43,15 +47,16 @@ public class TripMatcher {
                     trips.add(incompleteTrip(tapOn));
                 }
                 tapOnWaitingByPan.put(tap.pan(), tap);
-            } else if (tapOn != null) {
-                if (sameBus(tapOn, tap)) {
-                    trips.add(finishedTrip(tapOn, tap));
-                } else {
-                    // A tap off on another bus shows the rider left the first bus without tapping off.
-                    trips.add(incompleteTrip(tapOn));
-                }
+            } else if (tapOn == null) {
+                log.warn("Ignoring tap off {}: no tap on is waiting for this card", tap.id());
+            } else if (sameBus(tapOn, tap)) {
+                trips.add(finishedTrip(tapOn, tap));
+            } else {
+                // A tap off on another bus shows the rider left the first bus without tapping off.
+                log.warn("Ignoring tap off {}: it is on {}/{} but tap on {} was on {}/{}",
+                        tap.id(), tap.companyId(), tap.busId(), tapOn.id(), tapOn.companyId(), tapOn.busId());
+                trips.add(incompleteTrip(tapOn));
             }
-            // A tap off with no tap on waiting is ignored.
         }
 
         // Any tap on still waiting at the end never had a tap off.
