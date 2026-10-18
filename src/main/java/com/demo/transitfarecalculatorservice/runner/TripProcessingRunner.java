@@ -1,23 +1,22 @@
 package com.demo.transitfarecalculatorservice.runner;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-
+import com.demo.transitfarecalculatorservice.tap.Tap;
+import com.demo.transitfarecalculatorservice.tap.TapCsvReader;
+import com.demo.transitfarecalculatorservice.trip.Trip;
+import com.demo.transitfarecalculatorservice.trip.TripCsvWriter;
+import com.demo.transitfarecalculatorservice.trip.TripMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import com.demo.transitfarecalculatorservice.tap.Tap;
-import com.demo.transitfarecalculatorservice.tap.TapCsvReader;
-import com.demo.transitfarecalculatorservice.trip.Trip;
-import com.demo.transitfarecalculatorservice.trip.TripCsvWriter;
-import com.demo.transitfarecalculatorservice.trip.TripMatcher;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Runs once at startup: reads the taps file, builds the trips and writes the trips file.

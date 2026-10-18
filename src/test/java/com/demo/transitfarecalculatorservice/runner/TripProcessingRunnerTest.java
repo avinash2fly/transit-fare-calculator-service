@@ -1,21 +1,20 @@
 package com.demo.transitfarecalculatorservice.runner;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
+import com.demo.transitfarecalculatorservice.fare.FareConfig;
+import com.demo.transitfarecalculatorservice.tap.TapCsvReader;
+import com.demo.transitfarecalculatorservice.trip.TripCsvWriter;
+import com.demo.transitfarecalculatorservice.trip.TripMatcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.DefaultApplicationArguments;
 
-import com.demo.transitfarecalculatorservice.fare.FareConfig;
-import com.demo.transitfarecalculatorservice.tap.TapCsvReader;
-import com.demo.transitfarecalculatorservice.trip.TripCsvWriter;
-import com.demo.transitfarecalculatorservice.trip.TripMatcher;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TripProcessingRunnerTest {
 

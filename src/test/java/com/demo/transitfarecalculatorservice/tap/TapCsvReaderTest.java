@@ -1,14 +1,13 @@
 package com.demo.transitfarecalculatorservice.tap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.demo.transitfarecalculatorservice.helper.DateTimeHelper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.demo.transitfarecalculatorservice.helper.DateTimeHelper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TapCsvReaderTest {
 

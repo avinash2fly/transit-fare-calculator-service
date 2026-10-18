@@ -1,19 +1,14 @@
 package com.demo.transitfarecalculatorservice.trip;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.demo.transitfarecalculatorservice.fare.FareCalculator;
+import com.demo.transitfarecalculatorservice.tap.Tap;
+import com.demo.transitfarecalculatorservice.tap.TapType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.demo.transitfarecalculatorservice.fare.FareCalculator;
-import com.demo.transitfarecalculatorservice.tap.Tap;
-import com.demo.transitfarecalculatorservice.tap.TapType;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Component
 public class TripMatcher {

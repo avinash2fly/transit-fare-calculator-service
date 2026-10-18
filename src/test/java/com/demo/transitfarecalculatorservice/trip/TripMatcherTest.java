@@ -1,18 +1,17 @@
 package com.demo.transitfarecalculatorservice.trip;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.demo.transitfarecalculatorservice.fare.FareConfig;
 import com.demo.transitfarecalculatorservice.helper.DateTimeHelper;
 import com.demo.transitfarecalculatorservice.tap.Tap;
 import com.demo.transitfarecalculatorservice.tap.TapType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class TripMatcherTest {
 
