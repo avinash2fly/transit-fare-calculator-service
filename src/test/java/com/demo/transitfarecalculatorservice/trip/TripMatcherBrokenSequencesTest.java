@@ -43,6 +43,24 @@ class TripMatcherBrokenSequencesTest {
     }
 
     @Test
+    void tapOnOnTheSameBusAgainClosesTheOpenTripAsIncomplete() {
+        Tap firstTapOn = tap(1, "22-01-2023 08:00:00", TapType.ON, "Stop1", "Company1", "Bus1");
+        Tap secondTapOn = tap(2, "22-01-2023 08:01:00", TapType.ON, "Stop1", "Company1", "Bus1");
+        Tap tapOff = tap(3, "22-01-2023 08:10:00", TapType.OFF, "Stop2", "Company1", "Bus1");
+
+        List<Trip> trips = matcher.match(List.of(firstTapOn, secondTapOn, tapOff));
+
+        Trip incompleteTrip = new Trip(
+                firstTapOn.dateTimeUtc(), null, "Stop1", null,
+                new BigDecimal("7.30"), "Company1", "Bus1", PAN, TripStatus.INCOMPLETE);
+        Trip completedTrip = new Trip(
+                secondTapOn.dateTimeUtc(), tapOff.dateTimeUtc(), "Stop1", "Stop2",
+                new BigDecimal("3.25"), "Company1", "Bus1", PAN, TripStatus.COMPLETED);
+
+        assertEquals(List.of(incompleteTrip, completedTrip), trips);
+    }
+
+    @Test
     void tapOffOnAnotherBusClosesTheOpenTripAsIncompleteAndIsIgnored() {
         Tap tapOn = tap(1, "22-01-2023 08:00:00", TapType.ON, "Stop1", "Company1", "Bus1");
         Tap tapOff = tap(2, "22-01-2023 08:10:00", TapType.OFF, "Stop2", "Company1", "Bus2");

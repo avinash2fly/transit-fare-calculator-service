@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FareCalculatorTest {
 
@@ -29,5 +30,11 @@ class FareCalculatorTest {
         assertEquals(new BigDecimal("7.30"), calculator.maxFareFrom("Stop1"));
         assertEquals(new BigDecimal("5.50"), calculator.maxFareFrom("Stop2"));
         assertEquals(new BigDecimal("7.30"), calculator.maxFareFrom("Stop3"));
+    }
+
+    @Test
+    void anUnknownStopIsAnError() {
+        assertThrows(IllegalArgumentException.class, () -> calculator.fareBetween("Stop1", "Stop9"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.maxFareFrom("Stop9"));
     }
 }

@@ -36,7 +36,7 @@ class TripMatcherTest {
                 new BigDecimal("3.25"), "Company1", "Bus37", PAN, TripStatus.COMPLETED);
 
         assertEquals(List.of(expectedTrip), trips);
-        assertEquals(300L, expectedTrip.durationSecs());
+        assertEquals(300L, trips.getFirst().durationSecs());
     }
 
     @Test
@@ -64,7 +64,21 @@ class TripMatcherTest {
                 new BigDecimal("7.30"), "Company1", "Bus37", PAN, TripStatus.INCOMPLETE);
 
         assertEquals(List.of(expectedTrip), trips);
-        assertNull(expectedTrip.durationSecs());
+        assertNull(trips.getFirst().durationSecs());
+    }
+
+    @Test
+    void tapsAtTheSameTimeArePairedInIdOrder() {
+        Tap tapOff = tap(2, "22-01-2023 13:00:00", TapType.OFF, "Stop2");
+        Tap tapOn = tap(1, "22-01-2023 13:00:00", TapType.ON, "Stop1");
+
+        List<Trip> trips = matcher.match(List.of(tapOff, tapOn));
+
+        Trip expectedTrip = new Trip(
+                tapOn.dateTimeUtc(), tapOff.dateTimeUtc(), "Stop1", "Stop2",
+                new BigDecimal("3.25"), "Company1", "Bus37", PAN, TripStatus.COMPLETED);
+
+        assertEquals(List.of(expectedTrip), trips);
     }
 
     @Test
